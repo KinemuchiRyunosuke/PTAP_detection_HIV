@@ -3,23 +3,25 @@ from Bio import SeqIO
 
 
 HIV_dict = {\
-    "HIV-1": {"gag": ["gag"],
-              "pol": ["pol"],
-              "vif": ["vif"],
-              "vpr": ["vpr"],
-              "tat": ["tat"],
-              "rev": ["rev"],
-              "vpu": ["vpu"],
-              "envelope glycoprotein": ["envelope glycoprotein"],
-              "nef": ["nef"]},
-    "HIV-2": {"gag": ["gag"],
-              "vif": ["vif"],
-              "vpx": ["vpx"],
-              "vpr": ["vpr"],
-              "tat": ["tat"],
-              "rev": ["rev"],
-              "envelope polyprotein": "envelope polyprotein",
-              "nef": ["nef"]}
+    "HIV-1": {"gag": ["gag", "Gag"],
+              "pol": ["pol", "Pol"],
+              "vif": ["vif", "Vif"],
+              "vpr": ["vpr", "Vpr"],
+              "tat": ["tat", "Tat"],
+              "rev": ["rev", "Rev"],
+              "vpu": ["vpu", "Vpu"],
+              "envelope glycoprotein":
+                ["envelope glycoprotein", "env protein"],
+              "nef": ["nef", "Nef"]},
+    "HIV-2": {"gag": ["gag", "Gag"],
+              "vif": ["vif", "Vif"],
+              "vpx": ["vpx", "Vpx"],
+              "vpr": ["vpr", "Vpr"],
+              "tat": ["tat", "Tat"],
+              "rev": ["rev", "Rev"],
+              "envelope polyprotein":
+                ["envelope polyprotein", "env protein"],
+              "nef": ["nef", "Nef"]}
 }
 
 
@@ -33,12 +35,12 @@ def main():
             records = SeqIO.parse(f, 'fasta')
 
             for record in records:
-                kind, protein = determine(record.desc, HIV_dict)
+                kind, protein = determine(record.description, HIV_dict)
 
 
 def determine(desc, HIV_dict):
     # HIVの種別を判定
-    kind = None
+    kind, protein = None, None
     keys_HIV1 = ["HIV-1", "Human immunodeficiency virus 1"]
     keys_HIV2 = ["HIV-2", "Human immunodeficiency virus 2"]
 
@@ -56,7 +58,6 @@ def determine(desc, HIV_dict):
         return 0
 
     # タンパク質を判定
-    protein = None
     for key, vals in HIV_dict[kind].items():
         for val in vals:
             if val in desc:
@@ -67,3 +68,6 @@ def determine(desc, HIV_dict):
               "desc: {}".format(desc))
 
     return kind, protein
+
+if __name__ == '__main__':
+    main()
