@@ -24,11 +24,12 @@ HIV_dict = {\
 
 
 def main():
-    fasta_path = 'data/raw'
-    fastafiles = os.listdir(fasta_path)
+    fasta_dir = 'data/raw'
+    fastafiles = os.listdir(fasta_dir)
 
     for fastafile in fastafiles:
-        with open(fastafile, 'r') as f:
+        fasta_path = os.path.join(fasta_dir, fastafile)
+        with open(fasta_path, 'r') as f:
             records = SeqIO.parse(f, 'fasta')
 
             for record in records:
@@ -37,19 +38,32 @@ def main():
 
 def determine(desc, HIV_dict):
     # HIVの種別を判定
-    if ["HIV-1", "Human immunodeficiency virus 1"] in desc:
-        kind = "HIV-1"
-    elif ["HIV-2", "Human immunodeficiency virus 2"] in desc:
-        kind = "HIV-2"
+    kind = None
+    keys_HIV1 = ["HIV-1", "Human immunodeficiency virus 1"]
+    keys_HIV2 = ["HIV-2", "Human immunodeficiency virus 2"]
+
+    for key in keys_HIV1:
+        if key in desc:
+            kind = "HIV-1"
+
+    if kind is not None:
+        for key in keys_HIV2:
+            if key in desc:
+                kind = "HIV-2"
     else:
         print("kind couldn't be determined."\
               "desc: {}".format(desc))
+        return 0
 
-    for key, val in HIV_dict[kind].items():
-        if val in desc:
-            protein = key
-        else:
-            print("protein coundn't be determined."\
-                  "desc: {}".format(desc))
+    # タンパク質を判定
+    protein = None
+    for key, vals in HIV_dict[kind].items():
+        for val in vals:
+            if val in desc:
+                protein = key
+
+    if protein is None:
+        print("protein coundn't be determined."\
+              "desc: {}".format(desc))
 
     return kind, protein
