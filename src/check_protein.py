@@ -5,13 +5,13 @@ from Bio import SeqIO
 HIV_dict = {\
     "HIV-1": {"gag": ["gag", "Gag"],
               "pol": ["pol", "Pol"],
-              "vif": ["vif", "Vif"],
+              "vif": ["vif", "Vif", "viral infectivity factor"],
               "vpr": ["vpr", "Vpr"],
               "tat": ["tat", "Tat"],
               "rev": ["rev", "Rev"],
               "vpu": ["vpu", "Vpu"],
               "envelope glycoprotein":
-                ["envelope glycoprotein", "env protein"],
+                ["env", "Env"],
               "nef": ["nef", "Nef"]},
     "HIV-2": {"gag": ["gag", "Gag"],
               "vif": ["vif", "Vif"],
@@ -48,14 +48,15 @@ def determine(desc, HIV_dict):
         if key in desc:
             kind = "HIV-1"
 
-    if kind is not None:
+    if kind is None:
         for key in keys_HIV2:
             if key in desc:
                 kind = "HIV-2"
-    else:
-        print("kind couldn't be determined."\
+
+    if kind is None:
+        print("kind couldn't be determined. "\
               "desc: {}".format(desc))
-        return 0
+        return kind, protein
 
     # タンパク質を判定
     for key, vals in HIV_dict[kind].items():
@@ -64,7 +65,7 @@ def determine(desc, HIV_dict):
                 protein = key
 
     if protein is None:
-        print("protein coundn't be determined."\
+        print("protein coundn't be determined. "\
               "desc: {}".format(desc))
 
     return kind, protein
