@@ -41,8 +41,8 @@ protein_dict = {\
 
 
 def main():
-    fasta_path = 'data/raw'
-    fastafiles = os.listdir(fasta_path)
+    fasta_dir = 'data/raw'
+    fastafiles = os.listdir(fasta_dir)
 
     model = create_model()
     checkpoint_path = 'models/'
@@ -50,7 +50,9 @@ def main():
 
     y_pos = []
     for fastafile in fastafiles:
-        for (fragment, kind, protein) in fragment_generator(fastafile, 26):
+        fasta_path = os.path.join(fasta_dir, fastafile)
+
+        for (fragment, kind, protein) in fragment_generator(fasta_path, 26):
             y_pred = model.predict(fragment)
             if y_pred >= threshold:
                 y_pos.append([fragment, kind, protein])
