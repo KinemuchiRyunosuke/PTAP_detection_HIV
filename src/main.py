@@ -1,10 +1,12 @@
 import os
-import numpy as np
 import pandas as pd
+import pickle
 import tensorflow as tf
 
 from Bio import SeqIO
 from models.transformer import BinaryClassificationTransformer
+
+from features.preprocessing import Vocab, add_class_token
 
 
 num_words = 25
@@ -41,6 +43,11 @@ protein_dict = {\
 
 
 def main():
+    vocab_path = 'references/vocab.pickle'
+    with open(vocab_path, 'rb') as f:
+        tokenizer = pickle.load(f)
+    vocab = Vocab(tokenizer)
+
     fasta_dir = 'data/raw'
     fastafiles = os.listdir(fasta_dir)
 
@@ -53,6 +60,7 @@ def main():
         fasta_path = os.path.join(fasta_dir, fastafile)
 
         for (fragment, kind, protein) in fragment_generator(fasta_path, 26):
+            fragment = vocab.encode(fragment)
             y_pred = model.predict(fragment)
             if y_pred >= threshold:
                 y_pos.append([fragment, kind, protein])
