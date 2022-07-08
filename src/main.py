@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import pandas as pd
 import tensorflow as tf
 
 from Bio import SeqIO
@@ -15,6 +16,30 @@ head_num = 8
 dropout_rate = 0.04
 threshold = 0.5
 
+protein_dict = {\
+    "HIV-1": {"gag": ["gag", "Gag", "GAG"],
+              "pol": ["pol", "Pol", "POL"],
+              "vif": ["vif", "Vif", "VIF", "viral infectivity factor"],
+              "vpr": ["vpr", "Vpr", "VPR", "vpR"],
+              "tat": ["tat", "Tat", "TAT"],
+              "rev": ["rev", "Rev", "REV"],
+              "vpu": ["vpu", "Vpu", "VPU"],
+              "envelope glycoprotein":
+                ["env", "Env", "ENV", "gp120", "gp41", "gp160"],
+              "nef": ["nef", "Nef", "NEF"]},
+    "HIV-2": {"gag": ["gag", "Gag", "GAG"],
+              "pol": ["pol", "Pol", "POL"],
+              "vif": ["vif", "Vif", "VIF"],
+              "vpx": ["vpx", "Vpx", "VPX"],
+              "vpr": ["vpr", "Vpr", "VPR"],
+              "tat": ["tat", "Tat", "TAT"],
+              "rev": ["rev", "Rev", "REV"],
+              "envelope polyprotein":
+                ["envelope polyprotein", "env protein",
+                 "envelope glycoprotein"],
+              "nef": ["nef", "Nef", "NEF"]}
+}
+
 
 def main():
     fasta_path = 'data/raw'
@@ -24,18 +49,15 @@ def main():
     checkpoint_path = 'models/saved_model.pb'
     model.load_weights(checkpoint_path)
 
+    y_pos = []
     for fastafile in fastafiles:
-        for (fragment, disc) in fragment_generator(fastafile, 26):
+        for (fragment, kind, protein) in fragment_generator(fastafile, 26):
             y_pred = model.predict(fragment)
-            if y_pred > threshold:
-                y_pos += fragment
+            if y_pred >= threshold:
+                y_pos.append([fragment, kind, protein])
 
-
-        y_pred = model.predict(fragment_generator(fastafile, 26))
-        y_pred = np.squeeze(y_pred)
-        y_pred = (y_pred > threshold).astype(int)
-        y_pos = y_pred[y_pred == 1]
-
+    df = pd.DataFrame(y_pos, columns=['fragment', 'kind', 'protein'])
+    df.to_csv('reports/results/false_positive.csv')
 
 
 def fragment_generator(fastafile, length):
@@ -45,7 +67,44 @@ def fragment_generator(fastafile, length):
         for record in records:
             for i in range(len(record.seq) - length + 1):
                 fragment = record.seq[i:(i+length)]
-                yield (fragment, record.disc)
+
+                kind, protein = determine(record.description, protein_dict)
+                yield (fragment, kind, protein)
+
+def determine(desc, protein_dict):
+    # HIV-1とHIV-2を判別
+    keywords_HIV1 = ["HIV-1", "Human immunodeficiency virus 1",
+                     "Human immunodeficiency virus type 1"]
+    keywords_HIV2 = ["HIV-2", "Human immunodeficiency virus 2",
+                     "Human immunodeficiency virus type 2"]
+
+    def have_keyword(desc, keywords):
+        have_keyword = False
+
+        for keyword in keywords:
+            if keyword in desc:
+                have_keyword = True
+                break
+
+        return have_keyword
+
+    if have_keyword(desc, keywords_HIV1):
+        kind = "HIV-1"
+    elif have_keyword(desc, keywords_HIV2):
+        kind = "HIV-2"
+
+    # タンパク質名を判別
+    protein_name = None
+    for key, proteins in protein_dict[kind].items():
+        for protein in proteins:
+            if protein in desc:
+                protein_name = key
+                break
+
+        if protein_name is not None:
+            break
+
+    return kind, protein_name
 
 def create_model():
     """ モデルを定義する """
@@ -60,3 +119,7 @@ def create_model():
                  loss='binary_crossentropy')
 
     return model
+
+
+if __name__ == '__main__':
+    main()

@@ -11,7 +11,7 @@ HIV_dict = {\
               "rev": ["rev", "Rev", "REV"],
               "vpu": ["vpu", "Vpu", "VPU"],
               "envelope glycoprotein":
-                ["env", "Env", "gp120", "gp41", "gp160"],
+                ["env", "Env", "ENV", "gp120", "gp41", "gp160"],
               "nef": ["nef", "Nef", "NEF"]},
     "HIV-2": {"gag": ["gag", "Gag", "GAG"],
               "pol": ["pol", "Pol", "POL"],
@@ -21,7 +21,8 @@ HIV_dict = {\
               "tat": ["tat", "Tat", "TAT"],
               "rev": ["rev", "Rev", "REV"],
               "envelope polyprotein":
-                ["envelope polyprotein", "env protein"],
+                ["envelope polyprotein", "env protein",
+                 "envelope glycoprotein"],
               "nef": ["nef", "Nef", "NEF"]}
 }
 
