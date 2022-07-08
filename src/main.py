@@ -35,8 +35,7 @@ protein_dict = {\
               "tat": ["tat", "Tat", "TAT"],
               "rev": ["rev", "Rev", "REV"],
               "envelope polyprotein":
-                ["envelope polyprotein", "env protein",
-                 "envelope glycoprotein"],
+                ["env", "Env", "ENV"],
               "nef": ["nef", "Nef", "NEF"]}
 }
 
@@ -46,7 +45,7 @@ def main():
     fastafiles = os.listdir(fasta_path)
 
     model = create_model()
-    checkpoint_path = 'models/saved_model.pb'
+    checkpoint_path = 'models/'
     model.load_weights(checkpoint_path)
 
     y_pos = []

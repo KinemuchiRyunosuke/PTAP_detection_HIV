@@ -21,8 +21,8 @@ HIV_dict = {\
               "tat": ["tat", "Tat", "TAT"],
               "rev": ["rev", "Rev", "REV"],
               "envelope polyprotein":
-                ["envelope polyprotein", "env protein",
-                 "envelope glycoprotein"],
+                ["env", "Env", "ENV", "envelope polyprotein",
+                 "env protein", "envelope glycoprotein"],
               "nef": ["nef", "Nef", "NEF"]}
 }
 
