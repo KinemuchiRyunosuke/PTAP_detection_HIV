@@ -16,9 +16,9 @@ def main():
 
             for record in records:
                 kind = determine_kind(record.description)
-                is_whole_genome = is_whole_genome(record.description, kind)
+                whole_genome = is_whole_genome(record.description, kind)
 
-                if is_whole_genome:
+                if whole_genome:
                     continue
 
                 if kind == 'HIV-1':
@@ -56,13 +56,13 @@ def is_whole_genome(desc, kind):
     with open(json_path, 'r') as f:
         HIV_dict = json.load(f)
 
-    is_whole_genome = True
+    whole_genome = True
     for key, vals in HIV_dict[kind].items():
         for val in vals:
             if val in desc:
                 whole_genome = False
 
-    return is_whole_genome
+    return whole_genome
 
 
 if __name__ == '__main__':
