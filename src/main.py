@@ -62,6 +62,7 @@ def main():
         for (fragment, kind, protein) in fragment_generator(fasta_path, 26):
             fragment = vocab.encode(fragment)
             y_pred = model.predict(fragment)
+            y_pred = y_pred[0]
             if y_pred >= threshold:
                 y_pos.append([fragment, kind, protein])
 
