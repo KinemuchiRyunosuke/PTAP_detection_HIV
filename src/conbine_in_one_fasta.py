@@ -29,7 +29,7 @@ def main():
                     continue
 
                 with open(out_path, 'a') as f_out:
-                    SeqIO.write(record.seq, f_out, 'fasta')
+                    SeqIO.write(record, f_out, 'fasta')
 
 
 def determine_kind(desc):
